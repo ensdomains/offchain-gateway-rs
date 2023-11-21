@@ -28,13 +28,10 @@ pub async fn route(
             .await
             .unwrap()
             .sign(s.clone())
-            .await
             .unwrap())
     }
 
-    handle(request_payload, state).await.unwrap()
-    // match handle(request_payload, state).await {
-    //     Ok(response) => response,
-    //     Err(response) => response,
-    // }
+    handle(request_payload, state)
+        .await
+        .map_err(|x| x.into_response())
 }

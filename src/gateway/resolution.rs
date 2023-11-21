@@ -32,7 +32,7 @@ impl UnresolvedQuery<'_> {
             }
         };
 
-        let expires = chrono::Utc::now().timestamp() as u64 + 3600;
+        let expires = 1703980800; //chrono::Utc::now().timestamp() as u64 + 3600;
         let sender = self.calldata.sender.parse().unwrap();
 
         let data = ethers::abi::encode(&payload);

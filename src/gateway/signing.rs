@@ -25,7 +25,7 @@ pub enum SignError {
 }
 
 impl UnsignedPayload {
-    pub async fn sign(self, state: Arc<GlobalState>) -> Result<GatewayResponse, SignError> {
+    pub fn sign(self, state: Arc<GlobalState>) -> Result<GatewayResponse, SignError> {
         let encoded = ethers::abi::encode_packed(&[
             Token::Uint(U256::from(0x1900)),
             Token::Address(self.sender),
