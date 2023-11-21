@@ -1,5 +1,5 @@
 [package]
-name = "ccip-rust-gateway"
+name = "offchain-gateway-rs"
 version = "0.0.1"
 edition = "2021"
 
