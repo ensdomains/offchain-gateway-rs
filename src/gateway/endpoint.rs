@@ -2,11 +2,9 @@ use std::sync::Arc;
 
 use axum::{
     extract::State,
-    http::request,
     response::{IntoResponse, Response},
     Json,
 };
-use tracing::info;
 
 use crate::state::GlobalState;
 
