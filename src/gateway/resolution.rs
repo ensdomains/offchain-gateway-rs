@@ -31,7 +31,7 @@ impl UnresolvedQuery<'_> {
 
                 info!("Resolving text record: {:?}", hash);
 
-                let x = state.db.get_records(&hash, &["avatar"]).await;
+                let x = state.db.get_records(&hash, &[record]).await;
                 info!("Resolving text recordz: {:?}", x);
 
                 // state
@@ -43,8 +43,9 @@ impl UnresolvedQuery<'_> {
 
                 // info!("Resolving text record: {:?}", str);
 
-                // state.db.get_records(node, records)
-                vec![Token::String("Hello".to_string())]
+                let value = x.get(record).to_owned().unwrap().clone().unwrap();
+
+                vec![Token::String(value)]
             }
             _ => Vec::new(),
         };
