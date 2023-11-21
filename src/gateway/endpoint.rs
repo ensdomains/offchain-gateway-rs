@@ -1,23 +1,37 @@
-use axum::{
-    extract::Path,
-    http::StatusCode,
-    Json
-};
+use axum::{extract::Path, http::StatusCode, Json};
+use ethers::abi::ParamType;
 use serde::{Deserialize, Serialize};
 use tracing::{debug, info};
+
+use crate::ccip::lookup::ResolverFunctionCall;
+
+use super::payload::ResolveCCIPPostPayload;
 
 pub async fn route(
     // Ommiting sender from path awaiting viem patch
     // Path(sender): Path<String>,
     Json(request_payload): Json<ResolveCCIPPostPayload>,
 ) -> (StatusCode, Json<ResolveCCIPPostResponse>) {
-    // info!("Received request from {}", sender);
-    info!("Received request with {}", request_payload.data);
+    match request_payload.decode() {
+        Ok((name, resolver_function_call)) => {
+            info!("Decoded name: {}", name);
+            info!("Decoded resolver_function_call: {:?}", resolver_function_call);
 
-    (
-        StatusCode::NOT_IMPLEMENTED,
-        Json(ResolveCCIPPostResponse::default()),
-    )
+            (
+                StatusCode::NOT_IMPLEMENTED,
+                Json(ResolveCCIPPostResponse::default()),
+            )        
+        }
+        Err(e) => {
+            info!("Error: {:?}", e);
+            info!("Request payload: {:?}", request_payload);
+            (
+                StatusCode::NOT_IMPLEMENTED,
+                Json(ResolveCCIPPostResponse::default()),
+            )        
+        }
+    }
+
     // match resolve::resolve(request_payload) {
     //     Ok(x) => (StatusCode::OK, Json(x)),
     //     Err(e) => {
@@ -25,12 +39,6 @@ pub async fn route(
     //         (e.into(), Json(ResolveCCIPPostResponse::default()))
     //     }
     // }
-}
-
-#[derive(Deserialize, Debug)]
-pub struct ResolveCCIPPostPayload {
-    data: String,
-    sender: String,
 }
 
 #[derive(Serialize)]

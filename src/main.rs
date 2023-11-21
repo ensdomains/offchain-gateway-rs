@@ -4,6 +4,8 @@ use tracing::info;
 pub mod gateway;
 pub mod database;
 mod http;
+pub mod ccip;
+pub mod utils;
 
 #[tokio::main]
 async fn main() {
