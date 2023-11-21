@@ -1,7 +1,7 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, env};
 
 use tokio_postgres::NoTls;
-use tracing::{info, warn, error};
+use tracing::{error, info};
 
 pub struct Database {
     pub client: tokio_postgres::Client,
@@ -10,10 +10,17 @@ pub struct Database {
 /// Connects to database
 pub async fn bootstrap() -> Database {
     info!("Bootstrapping the database...");
-    let (client, connection) =
-        tokio_postgres::connect("host=localhost user=postgres password=example", NoTls)
-            .await
-            .unwrap();
+    let (client, connection) = tokio_postgres::connect(
+        &format!(
+            "host={} user={} password={}",
+            env::var("POSTGRES_HOST").unwrap_or("localhost".to_string()),
+            env::var("POSTGRES_USER").unwrap_or("postgres".to_string()),
+            env::var("POSTGRES_PASSWORD").unwrap_or("example".to_string()),
+        ),
+        NoTls,
+    )
+    .await
+    .unwrap();
 
     // The connection object performs the actual communication with the database,
     // so spawn it off to run on its own.

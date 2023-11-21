@@ -345,25 +345,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ccip-rust-gateway"
-version = "0.0.1"
-dependencies = [
- "axum",
- "dotenvy",
- "ethers",
- "hex",
- "postgres",
- "postgres-types",
- "serde",
- "serde_json",
- "tokio",
- "tokio-postgres",
- "tower-http",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1904,6 +1885,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9cf5f9dd3933bd50a9e1f149ec995f39ae2c496d31fd772c1fd45ebc27e902b0"
 dependencies = [
  "memchr",
+]
+
+[[package]]
+name = "offchain-gateway-rs"
+version = "0.0.1"
+dependencies = [
+ "axum",
+ "dotenvy",
+ "ethers",
+ "hex",
+ "postgres",
+ "postgres-types",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-postgres",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
