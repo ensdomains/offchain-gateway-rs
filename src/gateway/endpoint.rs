@@ -26,6 +26,10 @@ pub async fn route(
 pub enum CCIPEndpointError {
     #[error("Invalid prefix {0}")]
     DecodeError(#[from] super::payload::ResolverDecodeError),
+    #[error("Resolve error {0}")]
+    ResolveError(#[from] super::resolution::ResolveError),
+    #[error("Sign error {0}")]
+    SignError(#[from] super::signing::SignError),
 }
 
 impl IntoResponse for CCIPEndpointError {
@@ -41,8 +45,6 @@ async fn handle(
     Ok(payload
         .decode()?
         .resolve(state.clone())
-        .await
-        .unwrap()
-        .sign(state.clone())
-        .unwrap())
+        .await?
+        .sign(state.clone())?)
 }

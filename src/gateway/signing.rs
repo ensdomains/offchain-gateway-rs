@@ -5,9 +5,10 @@ use ethers::{
     types::{H160, U256, U64},
     utils::keccak256,
 };
+use thiserror::Error;
 
-use crate::state::GlobalState;
 use super::response::GatewayResponse;
+use crate::state::GlobalState;
 
 pub struct UnsignedPayload {
     pub data: Vec<u8>,
@@ -17,8 +18,9 @@ pub struct UnsignedPayload {
     pub expires: u64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Error)]
 pub enum SignError {
+    #[error("Unknown error {0}")]
     UnknownError(String),
 }
 

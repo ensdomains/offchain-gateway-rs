@@ -1,11 +1,12 @@
 use std::sync::Arc;
 
 use ethers::{abi::Token, providers::namehash, utils::keccak256};
+use thiserror::Error;
 use tracing::info;
 
 use crate::{ccip::lookup::ResolverFunctionCall, state::GlobalState};
 
-use super::{payload::ResolveCCIPPostPayload, response::GatewayResponse, signing::UnsignedPayload};
+use super::{payload::ResolveCCIPPostPayload, signing::UnsignedPayload};
 
 pub struct UnresolvedQuery<'a> {
     pub name: String,
@@ -13,11 +14,14 @@ pub struct UnresolvedQuery<'a> {
     pub calldata: &'a ResolveCCIPPostPayload,
 }
 
+#[derive(Debug, Error)]
+pub enum ResolveError {
+    #[error("Unknown error")]
+    NotFound,
+}
+
 impl UnresolvedQuery<'_> {
-    pub async fn resolve(
-        &self,
-        state: Arc<GlobalState>,
-    ) -> Result<UnsignedPayload, GatewayResponse> {
+    pub async fn resolve(&self, state: Arc<GlobalState>) -> Result<UnsignedPayload, ResolveError> {
         info!("Resolving query: {:?}", self.data);
 
         let payload: Vec<Token> = match &self.data {
@@ -31,16 +35,6 @@ impl UnresolvedQuery<'_> {
                 info!("Resolving text record: {:?}", hash);
 
                 let x = state.db.get_records(&hash, &[record]).await;
-                info!("Resolving text recordz: {:?}", x);
-
-                // state
-                //     .db
-                //     .upsert(&hash, &HashMap::default(), &HashMap::default())
-                //     .await;
-
-                // let str = String::from_utf8(_bf.clone()).unwrap();
-
-                // info!("Resolving text record: {:?}", str);
 
                 let value = x.get(record).to_owned().unwrap().clone().unwrap();
 
