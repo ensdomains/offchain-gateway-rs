@@ -3,9 +3,11 @@ use std::{env, str::FromStr, sync::Arc};
 use ethers::{
     abi::{Token, AbiEncode},
     signers::LocalWallet,
+    signers::Signer,
     types::{H160, U256, U64},
     utils::keccak256,
 };
+use tracing::info;
 
 use crate::state::GlobalState;
 
@@ -37,7 +39,12 @@ impl UnsignedPayload {
 
         let message_hash = keccak256(encoded);
 
-        let wallet = LocalWallet::from_str(env::var("PRIVATE_KEY").unwrap().as_str()).unwrap();
+        let wallet: LocalWallet = LocalWallet::from_str(env::var("PRIVATE_KEY").unwrap().as_str()).unwrap();
+
+        let address = format!("{:?}", wallet.address());
+
+        info!("Signing with address: {}", address);
+
         let signature: ethers::types::Signature = wallet.sign_hash(message_hash.into()).unwrap();
 
         let signature_r = signature.r.encode();
