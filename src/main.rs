@@ -4,6 +4,7 @@ use tracing::info;
 pub mod gateway;
 pub mod database;
 mod http;
+pub mod state;
 pub mod ccip;
 pub mod utils;
 
@@ -15,7 +16,9 @@ async fn main() {
 
     let db = database::bootstrap().await;
 
-    http::serve(db).await;
+    let state = state::GlobalState { db };
+
+    http::serve(state).await;
 
     info!("Shutting down");
 

@@ -1,6 +1,6 @@
-use std::net::SocketAddr;
+use std::{net::SocketAddr, sync::Arc};
 
-use crate::database::Database;
+use crate::{database::Database, state::GlobalState};
 use axum::{
     routing::{get, post},
     Router, Server,
@@ -9,11 +9,12 @@ use tower_http::cors::CorsLayer;
 use tracing::{debug, info};
 
 /// Starts the HTTP Server
-pub async fn serve(_db: Database) {
+pub async fn serve(state: GlobalState) {
     info!("Starting webserver");
     let app = Router::new()
         .route("/", get(root))
         .route("/gateway", post(crate::gateway::endpoint::route))
+        .with_state(Arc::new(state))
         .layer(CorsLayer::very_permissive());
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));

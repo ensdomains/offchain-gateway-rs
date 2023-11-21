@@ -4,6 +4,8 @@ use tracing::info;
 
 use crate::ccip::lookup::ResolverFunctionCall;
 
+use super::{resolution::UnresolvedQuery, response::GatewayResponse};
+
 #[derive(Deserialize, Debug)]
 pub struct ResolveCCIPPostPayload {
     pub data: String,
@@ -14,7 +16,7 @@ impl ResolveCCIPPostPayload {
     /// This function handles the initial decoding of the payload
     /// It returns the name and the resolver function call that needs to be resolved
     /// TODO: Implement error handling
-    pub fn decode(&self) -> Result<(String, ResolverFunctionCall), ()> {
+    pub fn decode(&self) -> Result<UnresolvedQuery, GatewayResponse> {
         let data = self
             .data
             .strip_prefix("0x9061b923")
@@ -41,10 +43,11 @@ impl ResolveCCIPPostPayload {
             .into_bytes()
             .expect("Failed to decode bytes, invld request");
 
-        Ok((
+        Ok(UnresolvedQuery {
             name,
-            ResolverFunctionCall::try_from(rest_of_the_data.as_slice())
+            data: ResolverFunctionCall::try_from(rest_of_the_data.as_slice())
                 .expect("Failed to decode resolver function call, invld request"),
-        ))
+            calldata: self,
+        })
     }
 }

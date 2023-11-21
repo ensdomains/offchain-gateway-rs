@@ -1,60 +1,40 @@
-use axum::{extract::Path, http::StatusCode, Json};
-use ethers::abi::ParamType;
-use serde::{Deserialize, Serialize};
-use tracing::{debug, info};
+use std::sync::Arc;
 
-use crate::ccip::lookup::ResolverFunctionCall;
+use axum::{
+    extract::State,
+    http::request,
+    response::{IntoResponse, Response},
+    Json,
+};
+use tracing::info;
 
-use super::payload::ResolveCCIPPostPayload;
+use crate::state::GlobalState;
+
+use super::{payload::ResolveCCIPPostPayload, response::GatewayResponse};
 
 pub async fn route(
     // Ommiting sender from path awaiting viem patch
     // Path(sender): Path<String>,
+    State(state): State<Arc<GlobalState>>,
     Json(request_payload): Json<ResolveCCIPPostPayload>,
-) -> (StatusCode, Json<ResolveCCIPPostResponse>) {
-    match request_payload.decode() {
-        Ok((name, resolver_function_call)) => {
-            info!("Decoded name: {}", name);
-            info!("Decoded resolver_function_call: {:?}", resolver_function_call);
-
-            (
-                StatusCode::NOT_IMPLEMENTED,
-                Json(ResolveCCIPPostResponse::default()),
-            )        
-        }
-        Err(e) => {
-            info!("Error: {:?}", e);
-            info!("Request payload: {:?}", request_payload);
-            (
-                StatusCode::NOT_IMPLEMENTED,
-                Json(ResolveCCIPPostResponse::default()),
-            )        
-        }
+) -> impl IntoResponse {
+    async fn handle(
+        r: ResolveCCIPPostPayload,
+        s: Arc<GlobalState>,
+    ) -> Result<GatewayResponse, Response> {
+        Ok(r.decode()
+            .unwrap()
+            .resolve(s.clone())
+            .await
+            .unwrap()
+            .sign(s.clone())
+            .await
+            .unwrap())
     }
 
-    // match resolve::resolve(request_payload) {
-    //     Ok(x) => (StatusCode::OK, Json(x)),
-    //     Err(e) => {
-    //         error!("Error: {:?}", e);
-    //         (e.into(), Json(ResolveCCIPPostResponse::default()))
-    //     }
+    handle(request_payload, state).await.unwrap()
+    // match handle(request_payload, state).await {
+    //     Ok(response) => response,
+    //     Err(response) => response,
     // }
-}
-
-#[derive(Serialize)]
-pub struct ResolveCCIPPostResponse {
-    data: String,
-}
-
-#[derive(Serialize)]
-struct ResolveCCIPPostErrorResponse {
-    message: String,
-}
-
-impl Default for ResolveCCIPPostResponse {
-    fn default() -> Self {
-        Self {
-            data: "0x".to_string(),
-        }
-    }
 }
