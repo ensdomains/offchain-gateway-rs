@@ -1,8 +1,14 @@
-# ccip-rust-gateway
+# Offchain Gateway (Rust)
 
 This is a Rust implementation of the CCIP gateway. It allows you to issue unlimited gasless subdomains for your name, as well as to create, manage, and moderate namespaces.
 
 > Note, this gateway is built to be an **Opinionated ENS Subname Issuer**, if youre looking for something more generic, please checkout [ccip-gateway], and [].
+
+## Features
+
+- CCIP Spec Compliant Gateway Endpoint
+- `postgres` - Transparent Database backend
+- `selfservice` - Enabled self-service for updating records
 
 ## Setup
 
