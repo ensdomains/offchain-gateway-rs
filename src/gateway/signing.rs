@@ -2,7 +2,6 @@ use std::sync::Arc;
 
 use ethers::{
     abi::{AbiEncode, Token},
-    signers::Signer,
     types::{H160, U256, U64},
     utils::keccak256,
 };

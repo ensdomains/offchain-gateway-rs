@@ -1,6 +1,6 @@
 use std::{net::SocketAddr, sync::Arc};
 
-use crate::{database::Database, state::GlobalState};
+use crate::state::GlobalState;
 use axum::{
     routing::{get, post},
     Router, Server,

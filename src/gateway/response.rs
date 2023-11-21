@@ -14,7 +14,7 @@ impl IntoResponse for GatewayResponse {
                 (StatusCode::OK, Json(ResolveCCIPPostResponse { data })).into_response()
             }
             GatewayResponse::Error(message) => (
-                StatusCode::NOT_IMPLEMENTED,
+                StatusCode::BAD_REQUEST,
                 Json(ResolveCCIPPostErrorResponse { message }),
             )
                 .into_response(),

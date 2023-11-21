@@ -1,4 +1,5 @@
 use ethers::abi::ParamType;
+use thiserror::Error;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ResolverFunctionCall {
@@ -28,11 +29,15 @@ pub enum ResolverFunctionCall {
     PubKey,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Error)]
 pub enum ResolverFunctionCallDecodingError {
+    #[error("Invalid selector {0}")]
     InvalidSelector(String),
+    #[error("Invalid payload")]
     InvalidPayload,
+    #[error("Invalid namehash")]
     InvalidNamehash,
+    #[error("ABI decode error")]
     ABIDecodeError,
 }
 

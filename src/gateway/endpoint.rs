@@ -5,6 +5,7 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
+use thiserror::Error;
 
 use crate::state::GlobalState;
 
@@ -16,20 +17,32 @@ pub async fn route(
     State(state): State<Arc<GlobalState>>,
     Json(request_payload): Json<ResolveCCIPPostPayload>,
 ) -> impl IntoResponse {
-    async fn handle(
-        r: ResolveCCIPPostPayload,
-        s: Arc<GlobalState>,
-    ) -> Result<GatewayResponse, Response> {
-        Ok(r.decode()
-            .unwrap()
-            .resolve(s.clone())
-            .await
-            .unwrap()
-            .sign(s.clone())
-            .unwrap())
-    }
-
     handle(request_payload, state)
         .await
         .map_err(|x| x.into_response())
+}
+
+#[derive(Debug, Error)]
+pub enum CCIPEndpointError {
+    #[error("Invalid prefix {0}")]
+    DecodeError(#[from] super::payload::ResolverDecodeError),
+}
+
+impl IntoResponse for CCIPEndpointError {
+    fn into_response(self) -> Response {
+        GatewayResponse::Error(self.to_string()).into_response()
+    }
+}
+
+async fn handle(
+    payload: ResolveCCIPPostPayload,
+    state: Arc<GlobalState>,
+) -> Result<GatewayResponse, CCIPEndpointError> {
+    Ok(payload
+        .decode()?
+        .resolve(state.clone())
+        .await
+        .unwrap()
+        .sign(state.clone())
+        .unwrap())
 }

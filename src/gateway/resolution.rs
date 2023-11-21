@@ -1,6 +1,5 @@
-use std::{collections::HashMap, sync::Arc};
+use std::sync::Arc;
 
-use axum::response::IntoResponse;
 use ethers::{abi::Token, providers::namehash, utils::keccak256};
 use tracing::info;
 

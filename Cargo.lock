@@ -1943,6 +1943,7 @@ dependencies = [
  "postgres-types",
  "serde",
  "serde_json",
+ "thiserror",
  "tokio",
  "tokio-postgres",
  "tower-http",
