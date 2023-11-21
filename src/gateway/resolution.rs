@@ -35,8 +35,10 @@ impl UnresolvedQuery<'_> {
         let expires = 1703980800; //chrono::Utc::now().timestamp() as u64 + 3600;
         let sender = self.calldata.sender.parse().unwrap();
 
+        let request_payload = hex::decode(self.calldata.data.trim_start_matches("0x")).unwrap();
+
         let data = ethers::abi::encode(&payload);
-        let request_hash = keccak256(&self.calldata.data).to_vec();
+        let request_hash = keccak256(request_payload).to_vec();
         let result_hash = keccak256(&data).to_vec();
 
         Ok(UnsignedPayload {
