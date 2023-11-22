@@ -6,13 +6,16 @@
 This is a Rust implementation of the CCIP gateway. It allows you to issue unlimited gasless subdomains for your name, as well as to create, manage, and moderate namespaces.
 
 > [!NOTE]
-> This gateway is built to be an **Opinionated ENS Subname Issuer**, if youre looking for something more generic, please checkout [ccip-gateway], and [].
+> This gateway is built to be an **Opinionated ENS Subname Issuer**, if youre looking for something more generic, please checkout [ensdomains/offchain-resolver](https://github.com/ensdomains/offchain-resolver), and [ensdomains/offchain-resolver-example](https://github.com/ensdomains/offchain-resolver-example).
 
 ## Features
 
 - CCIP Spec Compliant Gateway Endpoint
-- `postgres` - Transparent Database backend
-- `selfservice` - Enabled self-service for updating records
+- `postgres` - Transparent Database backend.
+- `self-service` - Authentication-based updating records.
+- `eoa-self-service` - EOA-based Authentication. (TODO)
+- Modular authentication for EOA, Admin API, & more.
+- View endpoint for profile data.
 
 ## Setup
 
