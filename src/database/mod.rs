@@ -140,4 +140,20 @@ impl Database {
                 map
             })
     }
+
+    pub async fn get_all(&self, node: &[u8]) -> (HashMap<String, Option<String>>, HashMap<String, Option<String>>) {
+        let x = self
+            .client
+            .query_one(
+                "SELECT records, addresses FROM ens_data WHERE node = $1",
+                &[&node],
+            )
+            .await
+            .unwrap();
+
+        let records = x.get::<_, HashMap<String, Option<String>>>(0);
+        let addresses = x.get::<_, HashMap<String, Option<String>>>(1);
+
+        (records, addresses)
+    }
 }

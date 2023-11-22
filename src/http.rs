@@ -15,6 +15,7 @@ pub async fn serve(state: GlobalState) {
         .route("/", get(root))
         .route("/gateway", post(crate::gateway::endpoint::route))
         .route("/update", post(crate::selfservice::endpoint::route))
+        .route("/view/:name", get(crate::selfservice::view::route))
         .with_state(Arc::new(state))
         .layer(CorsLayer::very_permissive());
 

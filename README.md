@@ -19,7 +19,9 @@ This is a Rust implementation of the CCIP gateway. It allows you to issue unlimi
 ### Run the gateway
 The gateway is just a docker container / standalone binary. You can run it with docker-compose or just run the binary.
 
+```yaml
 todo: running the gateway
+```
 
 ### Deploy a Resolver
 
