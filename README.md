@@ -63,9 +63,9 @@ To issue a name from an trusted server, you can simply `POST` to `example.com/up
         "text": "hello world",
         "avatar": "https://avatars.githubusercontent.com/u/11744586?v=4",
     },
-	"addresses": {
-		"60": "0x225f137127d9067788314bc7fcc1f36746a3c3B5"
-	},
+    "addresses": {
+        "60": "0x225f137127d9067788314bc7fcc1f36746a3c3B5"
+    },
     "auth": "yes"
 }
 ```
