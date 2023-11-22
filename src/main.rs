@@ -4,12 +4,13 @@ use dotenvy::dotenv;
 use ethers::signers::{LocalWallet, Signer};
 use tracing::info;
 
-pub mod ccip;
-pub mod database;
-pub mod gateway;
 mod http;
+pub mod ccip;
 pub mod state;
 pub mod utils;
+pub mod gateway;
+pub mod database;
+pub mod selfservice;
 
 #[tokio::main]
 async fn main() {
