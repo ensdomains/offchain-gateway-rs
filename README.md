@@ -25,7 +25,9 @@ todo: running the gateway
 
 Using a CCIP Gateway requires a resolver contract to be acting on behalf of the name. Although you could write your own contract, we recommend you deploy a proxy contract through [ccip.tools](https://ccip.tools/).
 
-![](.github/ccip-tools.png)
+[![](.github/ccip-tools.png)](https://ccip.tools/)
+
+(Source for the contracts can be found at [ensdomains/ccip-tools](https://github.com/ensdomains/ccip-tools/tree/master/contracts))
 
 When asked for the `Gateway URL` supply your gateway's url (for eg: `https://gateway.example.com/{sender}.json`), and for the `Signers` field supply the address of your gateway (for eg: `[0x225f137127d9067788314bc7fcc1f36746a3c3B5]`), you can find this in the logs of your gateway.
 
