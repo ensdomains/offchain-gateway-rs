@@ -40,6 +40,29 @@ impl UnresolvedQuery<'_> {
 
                 vec![Token::String(value)]
             }
+            ResolverFunctionCall::AddrMultichain(_bf, chain) => {
+                let hash = namehash(&self.name).to_fixed_bytes().to_vec();
+
+                info!("Resolving addr record: {:?}", hash);
+
+                let x = state.db.get_addresses(&hash, &[&chain.to_string()]).await;
+
+                let value = x.get(&chain.to_string()).to_owned().unwrap().clone().unwrap();
+
+                vec![Token::String(value)]
+            }
+            ResolverFunctionCall::Addr(_bf) => {
+                let chain = 60;
+                let hash = namehash(&self.name).to_fixed_bytes().to_vec();
+
+                info!("Resolving addr record: {:?}", hash);
+
+                let x = state.db.get_addresses(&hash, &[&chain.to_string()]).await;
+
+                let value = x.get(&chain.to_string()).to_owned().unwrap().clone().unwrap();
+
+                vec![Token::String(value)]
+            }
             _ => Vec::new(),
         };
 

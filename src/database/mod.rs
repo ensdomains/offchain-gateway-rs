@@ -103,4 +103,41 @@ impl Database {
                 map
             })
     }
+
+    pub async fn get_addresses(
+        &self,
+        node: &[u8],
+        addresses: &[&str],
+    ) -> HashMap<String, Option<String>> {
+        // require that every record matches /a-zA-Z\./
+        // if records.iter().any(|x| !x.chars().all(|c| c.is_alphanumeric() || c == '.')) {
+        //     panic!("Invalid record name");
+        // }
+
+        // converts ['avatar', 'header'] to "records->'avatar', records->'header'"
+        let addresses_raw = addresses.iter().fold(String::new(), |acc, x| {
+            if acc.is_empty() {
+                format!("addresses->'{}'", x)
+            } else {
+                format!("{}, addresses->'{}'", acc, x)
+            }
+        });
+
+        let x = self
+            .client
+            .query_one(
+                &format!("SELECT {} FROM ens_data WHERE node = $1", addresses_raw),
+                &[&node],
+            )
+            .await
+            .unwrap();
+
+        addresses
+            .iter()
+            .enumerate()
+            .fold(HashMap::new(), |mut map, (i, record)| {
+                map.insert(record.to_string(), x.get::<_, Option<String>>(i));
+                map
+            })
+    }
 }
