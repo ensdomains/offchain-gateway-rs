@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use ethers::{abi::Token, providers::namehash, utils::keccak256};
+use ethers::{abi::Token, providers::namehash, utils::keccak256, types::H160};
 use thiserror::Error;
 use tracing::info;
 
@@ -49,7 +49,9 @@ impl UnresolvedQuery<'_> {
 
                 let value = x.get(&chain.to_string()).to_owned().unwrap().clone().unwrap();
 
-                vec![Token::String(value)]
+                let bytes = value.as_bytes().to_vec();
+
+                vec![Token::Bytes(bytes)]
             }
             ResolverFunctionCall::Addr(_bf) => {
                 let chain = 60;
@@ -61,7 +63,9 @@ impl UnresolvedQuery<'_> {
 
                 let value = x.get(&chain.to_string()).to_owned().unwrap().clone().unwrap();
 
-                vec![Token::String(value)]
+                let address = value.parse().unwrap();
+
+                vec![Token::Address(address)]
             }
             _ => Vec::new(),
         };
