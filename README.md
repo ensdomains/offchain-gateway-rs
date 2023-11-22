@@ -44,3 +44,34 @@ Finally you need to instruct the onchain registry to use your resolver. You can 
 Don't like the implementation? Fork this repo and make it your own!
 
 You might also be interested in the [resolution logic](https://github.com/ensdomains/offchain-gateway-rs/blob/main/src/gateway/resolution.rs) and [database modularity](https://github.com/ensdomains/offchain-gateway-rs/blob/main/src/database/mod.rs).
+
+## Integration
+
+This gateway implementation is designed to be modular, light, and easy to integrate. It comes with the abstract Datastore idea, (by default implemented with postgres), authentication, simple resolution logic, and a self-service API.
+
+This means that depending on your use case you can easily swap out the database, the resolution logic, and customize authentication.
+
+### Issuing a name
+
+To issue a name from an trusted server, you can simply `POST` to `example.com/update` with a JSON body such as
+
+```json
+{
+    "name": "luc.willbreak.eth",
+    "records": {
+        "name": "Luc",
+        "text": "hello world",
+        "avatar": "https://avatars.githubusercontent.com/u/11744586?v=4",
+    },
+	"addresses": {
+		"60": "0x225f137127d9067788314bc7fcc1f36746a3c3B5"
+	},
+    "auth": "yes"
+}
+```
+
+In a similar fashion users could self-service their names by using this api endpoint and custom authentication logic.
+
+### Viewing a name
+
+In events were our app might not have access to ethereum specific tooling, we can use the `GET` endpoint `example.com/view/luc.willbreak.eth` to view the data of a name. This endpoint can be helpful for showing profile editing pages and more.
