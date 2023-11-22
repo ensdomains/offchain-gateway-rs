@@ -3,7 +3,7 @@
 > [!WARNING]
 > This repository is under construction 🚧. We are actively improving it hackathon-style.
 
-This is a Rust implementation of the CCIP gateway. It allows you to issue unlimited gasless subdomains for your name, as well as to create, manage, and moderate namespaces.
+This is a Rust implementation of the [CCIP gateway](https://alpha-docs.ens.domains/resolvers/ccip). It allows you to issue unlimited gasless subdomains for your name, as well as to create, manage, and moderate namespaces.
 
 > [!NOTE]
 > This gateway is built to be an **Opinionated ENS Subname Issuer**, if youre looking for something more generic, please checkout [ensdomains/offchain-resolver](https://github.com/ensdomains/offchain-resolver), and [ensdomains/offchain-resolver-example](https://github.com/ensdomains/offchain-resolver-example).
@@ -23,7 +23,7 @@ This is a Rust implementation of the CCIP gateway. It allows you to issue unlimi
 The gateway is just a docker container / standalone binary. You can run it with docker-compose or just run the binary.
 
 ```yaml
-todo: running the gateway
+cargo run
 ```
 
 ### Deploy a Resolver
