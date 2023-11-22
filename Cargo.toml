@@ -8,7 +8,7 @@ axum = "0.6.20"
 chrono = "0.4.31"
 dotenvy = "0.15.7"
 ethers = "2.0.10"
-ethers-contract = "2"
+ethers-contract = "2.0.11"
 ethers-contract-derive = "2"
 ethers-core = { version = "2.0.11", features = ["eip712"] }
 hex = "0.4.3"
