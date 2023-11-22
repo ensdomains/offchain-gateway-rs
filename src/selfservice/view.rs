@@ -1,6 +1,5 @@
 use std::{collections::HashMap, sync::Arc};
 
-use crate::state::GlobalState;
 use axum::{
     extract::{Path, State},
     response::IntoResponse,
@@ -8,7 +7,8 @@ use axum::{
 };
 use ethers::providers::namehash;
 use serde::{Deserialize, Serialize};
-use tracing::info;
+
+use crate::state::GlobalState;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ViewPayload {

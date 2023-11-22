@@ -1,18 +1,12 @@
-use axum::{
-    extract::{Path, State},
-    http::StatusCode,
-    response::IntoResponse,
-    Json,
-};
-use ethers::core::utils::rlp::Decodable;
-use ethers::{core::k256::ecdsa, providers::namehash, types::Signature};
-use ethers_contract_derive::{Eip712, EthAbiType};
-use ethers_core::types::{transaction::eip712::Eip712, H160};
 use std::{collections::HashMap, str::FromStr, sync::Arc};
+
+use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
+use ethers::providers::namehash;
+use ethers_core::types::H160;
+use serde::{Deserialize, Serialize};
 use tracing::info;
 
 use crate::state::GlobalState;
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateNamePayload {

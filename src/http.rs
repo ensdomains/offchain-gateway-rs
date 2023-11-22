@@ -1,12 +1,13 @@
-use std::{net::SocketAddr, sync::Arc};
+use std::{env, net::SocketAddr, sync::Arc};
 
-use crate::state::GlobalState;
 use axum::{
     routing::{get, post},
     Router, Server,
 };
 use tower_http::cors::CorsLayer;
 use tracing::{debug, info};
+
+use crate::state::GlobalState;
 
 /// Starts the HTTP Server
 pub async fn serve(state: GlobalState) {
@@ -24,7 +25,13 @@ pub async fn serve(state: GlobalState) {
         .with_state(Arc::new(state))
         .layer(CorsLayer::very_permissive());
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
+    let addr = SocketAddr::from((
+        [0, 0, 0, 0],
+        env::var("PORT")
+            .unwrap_or("3000".to_string())
+            .parse::<u16>()
+            .expect("port should fit in u16"),
+    ));
     debug!("Listening on {}", addr);
 
     Server::bind(&addr)

@@ -30,7 +30,7 @@ pub enum ResolverDecodeError {
 }
 
 impl ResolveCCIPPostPayload {
-    /// This function handles the initial decoding of the payload
+    /// This function handles the initial encoding of the payload
     /// It returns the name and the resolver function call that needs to be resolved
     /// TODO: Implement error handling
     pub fn decode(&self) -> Result<UnresolvedQuery, ResolverDecodeError> {

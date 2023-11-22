@@ -1,9 +1,10 @@
 use std::sync::Arc;
 
-use ethers::{abi::Token, providers::namehash, types::H160, utils::keccak256};
+use ethers::{abi::Token, providers::namehash, utils::keccak256};
 use thiserror::Error;
 use tracing::info;
 
+use crate::multicoin::cointype::coins::CoinType;
 use crate::{ccip::lookup::ResolverFunctionCall, state::GlobalState};
 
 use super::{payload::ResolveCCIPPostPayload, signing::UnsignedPayload};
@@ -56,7 +57,11 @@ impl UnresolvedQuery<'_> {
                 vec![Token::String(value)]
             }
             ResolverFunctionCall::AddrMultichain(_bf, chain) => {
-                info!(name = self.name, chain = chain, "Resolution Address Multichain");
+                info!(
+                    name = self.name,
+                    chain = chain,
+                    "Resolution Address Multichain"
+                );
 
                 let hash = namehash(&self.name).to_fixed_bytes().to_vec();
 
@@ -69,7 +74,9 @@ impl UnresolvedQuery<'_> {
                     .clone()
                     .ok_or(ResolveError::NotFound)?;
 
-                let bytes = value.as_bytes().to_vec();
+                let bytes = CoinType::from(*chain as u32)
+                    .encode(value)
+                    .map_err(|_| ResolveError::Unparsable)?;
 
                 vec![Token::Bytes(bytes)]
             }
