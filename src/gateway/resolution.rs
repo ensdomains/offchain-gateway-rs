@@ -56,9 +56,9 @@ impl UnresolvedQuery<'_> {
                 vec![Token::String(value)]
             }
             ResolverFunctionCall::AddrMultichain(_bf, chain) => {
-                let hash = namehash(&self.name).to_fixed_bytes().to_vec();
+                info!(name = self.name, chain = chain, "Resolution Address Multichain");
 
-                info!("Resolving addr record: {:?}", hash);
+                let hash = namehash(&self.name).to_fixed_bytes().to_vec();
 
                 let x = state.db.get_addresses(&hash, &[&chain.to_string()]).await;
 
@@ -74,10 +74,10 @@ impl UnresolvedQuery<'_> {
                 vec![Token::Bytes(bytes)]
             }
             ResolverFunctionCall::Addr(_bf) => {
+                info!(name = self.name, "Resolution Address");
+
                 let chain = 60;
                 let hash = namehash(&self.name).to_fixed_bytes().to_vec();
-
-                info!("Resolving addr record: {:?}", hash);
 
                 let x = state.db.get_addresses(&hash, &[&chain.to_string()]).await;
 
