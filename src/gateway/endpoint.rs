@@ -34,14 +34,6 @@ pub enum CCIPEndpointError {
 
 impl IntoResponse for CCIPEndpointError {
     fn into_response(self) -> Response {
-        // TODO: remove
-        if let CCIPEndpointError::ResolveError(x) = &self {
-            if let super::resolution::ResolveError::Unparsable = x {
-                return (axum::http::StatusCode::UNPROCESSABLE_ENTITY, x.to_string())
-                    .into_response();
-            }
-        }
-
         GatewayResponse::Error(self.to_string()).into_response()
     }
 }
