@@ -1,56 +1,57 @@
-// use bs58::Alphabet;
-//
-// use crate::utils;
-//
-// use super::{MulticoinEncoder, MulticoinEncoderError};
-//
-// pub struct P2PKHDecoder {
-//     pub version: u8,
-// }
-//
-// impl MulticoinEncoder for P2PKHDecoder {
-//     fn encode(&self, data: &[u8]) -> Result<String, MulticoinEncoderError> {
-//         let bytes_len = data.len();
-//         if bytes_len < 3 {
-//             return Err(MulticoinEncoderError::InvalidStructure(
-//                 "len < 3".to_string(),
-//             ));
-//         }
-//
-//         if data[..2] != [0x76, 0xa9] {
-//             return Err(MulticoinEncoderError::InvalidStructure(
-//                 "invalid header".to_string(),
-//             ));
-//         }
-//
-//         let len = data[2] as usize;
-//         let expected_len = 3 + len + 2;
-//
-//         if bytes_len != expected_len {
-//             return Err(MulticoinEncoderError::InvalidStructure(format!(
-//                 "invalid length ({bytes_len:?} != {expected_len:?})"
-//             )));
-//         }
-//
-//         if data[bytes_len - 2..bytes_len] != [0x88, 0xac] {
-//             return Err(MulticoinEncoderError::InvalidStructure(
-//                 "invalid end".to_string(),
-//             ));
-//         }
-//
-//         let pub_key_hash = &data[3..3 + len];
-//
-//         let mut full = pub_key_hash.to_vec();
-//         full.insert(0, self.version);
-//
-//         let full_checksum = utils::sha256::hash(utils::sha256::hash(full.clone()));
-//
-//         full.extend_from_slice(&full_checksum[..4]);
-//
-//         let value = bs58::encode(full)
-//             .with_alphabet(Alphabet::BITCOIN)
-//             .into_string();
-//
-//         Ok(value)
-//     }
-// }
+use bs58::Alphabet;
+
+use crate::utils;
+
+use super::{MulticoinEncoder, MulticoinEncoderError};
+
+pub struct P2PKHEncoder {
+    pub(crate) accepted_versions: &'static [u8],
+}
+
+impl MulticoinEncoder for P2PKHEncoder {
+    fn encode(&self, data: &str) -> Result<Vec<u8>, MulticoinEncoderError> {
+        let decoded = bs58::decode(data)
+            .with_alphabet(Alphabet::BITCOIN)
+            .into_vec()
+            .map_err(|_| {
+                MulticoinEncoderError::InvalidStructure("failed to decode bs58".to_string())
+            })?;
+
+        // version byte, at least one data byte, 4 bytes of checksum
+        if decoded.len() < 6 {
+            return Err(MulticoinEncoderError::InvalidStructure("".to_string()));
+        }
+
+        if !self
+            .accepted_versions
+            .iter()
+            .any(|version| decoded[0] == *version)
+        {
+            return Err(MulticoinEncoderError::InvalidStructure(
+                "invalid version".to_string(),
+            ));
+        }
+
+        let checksum_begin = decoded.len() - 4;
+        let checksum = &decoded[checksum_begin..];
+        let data = &decoded[..checksum_begin];
+
+        let checksum_check = &utils::sha256::hash(utils::sha256::hash(data))[..4];
+
+        if checksum != checksum_check {
+            return Err(MulticoinEncoderError::InvalidStructure(
+                "invalid checksum".to_string(),
+            ));
+        }
+
+        let pub_key_hash = &data[1..];
+
+        Ok([
+            &[0x76, 0xa9, pub_key_hash.len() as u8] as &[u8],
+            pub_key_hash,
+            &[0x88, 0xac],
+        ]
+        .concat()
+        .to_vec())
+    }
+}

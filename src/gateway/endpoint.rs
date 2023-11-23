@@ -24,16 +24,24 @@ pub async fn route(
 
 #[derive(Debug, Error)]
 pub enum CCIPEndpointError {
-    #[error("Invalid prefix {0}")]
+    #[error("Invalid prefix: {0}")]
     DecodeError(#[from] super::payload::ResolverDecodeError),
-    #[error("Resolve error {0}")]
+    #[error("Resolve error: {0}")]
     ResolveError(#[from] super::resolution::ResolveError),
-    #[error("Sign error {0}")]
+    #[error("Sign error: {0}")]
     SignError(#[from] super::signing::SignError),
 }
 
 impl IntoResponse for CCIPEndpointError {
     fn into_response(self) -> Response {
+        // TODO: remove
+        if let CCIPEndpointError::ResolveError(x) = &self {
+            if let super::resolution::ResolveError::Unparsable = x {
+                return (axum::http::StatusCode::UNPROCESSABLE_ENTITY, x.to_string())
+                    .into_response();
+            }
+        }
+
         GatewayResponse::Error(self.to_string()).into_response()
     }
 }

@@ -2,9 +2,10 @@ use std::sync::Arc;
 
 use ethers::{abi::Token, providers::namehash, utils::keccak256};
 use thiserror::Error;
-use tracing::info;
+use tracing::{debug, info};
 
 use crate::multicoin::cointype::coins::CoinType;
+use crate::multicoin::encoding::MulticoinEncoder;
 use crate::{ccip::lookup::ResolverFunctionCall, state::GlobalState};
 
 use super::{payload::ResolveCCIPPostPayload, signing::UnsignedPayload};
@@ -65,18 +66,18 @@ impl UnresolvedQuery<'_> {
 
                 let hash = namehash(&self.name).to_fixed_bytes().to_vec();
 
-                let x = state.db.get_addresses(&hash, &[&chain.to_string()]).await;
+                let addresses = state.db.get_addresses(&hash, &[&chain.to_string()]).await;
 
-                let value = x
+                let value: &str = addresses
                     .get(&chain.to_string())
-                    .to_owned()
                     .ok_or(ResolveError::NotFound)?
-                    .clone()
+                    .as_ref()
                     .ok_or(ResolveError::NotFound)?;
 
-                let bytes = CoinType::from(*chain as u32)
-                    .encode(value)
-                    .map_err(|_| ResolveError::Unparsable)?;
+                let bytes = CoinType::from(*chain as u32).encode(value).map_err(|err| {
+                    debug!("error while trying to encode {}: {}", chain, err);
+                    ResolveError::Unparsable
+                })?;
 
                 vec![Token::Bytes(bytes)]
             }
