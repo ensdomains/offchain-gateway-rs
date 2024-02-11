@@ -3,19 +3,20 @@ use std::sync::Arc;
 use axum::{
     extract::State,
     response::{IntoResponse, Response},
-    Json,
 };
 use thiserror::Error;
 
 use crate::state::GlobalState;
+use crate::utils;
 
 use super::{payload::ResolveCCIPPostPayload, response::GatewayResponse};
 
 pub async fn route(
-    // Ommiting sender from path awaiting viem patch
+    // Omitting sender from path awaiting viem patch
     // Path(sender): Path<String>,
     State(state): State<Arc<GlobalState>>,
-    Json(request_payload): Json<ResolveCCIPPostPayload>,
+    // custom less strict json implementation because viem makes the request wrong
+    utils::axum_json::Json(request_payload): utils::axum_json::Json<ResolveCCIPPostPayload>,
 ) -> impl IntoResponse {
     handle(request_payload, state)
         .await
