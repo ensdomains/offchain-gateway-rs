@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use axum::http::HeaderMap;
 use axum::{
     extract::State,
     response::{IntoResponse, Response},
@@ -19,20 +18,9 @@ pub async fn route(
     // custom less strict json implementation because viem makes the request wrong
     utils::axum_json::Json(request_payload): utils::axum_json::Json<ResolveCCIPPostPayload>,
 ) -> impl IntoResponse {
-    let mut headers = HeaderMap::new();
-    headers.insert(
-        "content-type",
-        "application/json"
-            .parse()
-            .expect("parse should've succeeded"),
-    );
-
-    (
-        headers,
-        handle(request_payload, state)
-            .await
-            .map_err(|x| x.into_response()),
-    )
+    handle(request_payload, state)
+        .await
+        .map_err(|x| x.into_response())
 }
 
 #[derive(Debug, Error)]
