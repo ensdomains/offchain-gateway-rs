@@ -1,9 +1,10 @@
-use std::{env, net::SocketAddr, sync::Arc};
+use std::{env, sync::Arc};
 
 use axum::{
     routing::{get, post},
-    Router, Server,
+    Router,
 };
+use tokio::net::TcpListener;
 use tower_http::cors::CorsLayer;
 use tracing::{debug, info};
 
@@ -25,19 +26,19 @@ pub async fn serve(state: GlobalState) {
         .with_state(Arc::new(state))
         .layer(CorsLayer::very_permissive());
 
-    let addr = SocketAddr::from((
-        [0, 0, 0, 0],
+    let listener = TcpListener::bind(format!(
+        "0.0.0.0:{}",
         env::var("PORT")
             .unwrap_or("3000".to_string())
             .parse::<u16>()
-            .expect("port should fit in u16"),
-    ));
-    debug!("Listening on {}", addr);
+            .expect("port should fit in u16")
+    ))
+    .await
+    .unwrap();
 
-    Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    debug!("Listening on {}", listener.local_addr().unwrap());
+
+    axum::serve(listener, app).await.unwrap();
 }
 
 /// Self Endpoint on the Gateway
