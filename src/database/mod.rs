@@ -123,6 +123,8 @@ impl Database {
             }
         });
 
+        info!("node = {:?}", hex::encode(node));
+
         let x = self
             .client
             .query_one(
