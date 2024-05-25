@@ -1,0 +1,9 @@
+[workspace]
+# See https://doc.rust-lang.org/cargo/reference/resolver.html#resolver-versions
+resolver = "2"
+
+members = [
+    "crates/offchain-gateway",
+    "examples/full",
+    "examples/minimal"
+]
