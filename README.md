@@ -6,4 +6,3 @@
 ## Offchain Gateway Example
 
 If you are looking for the original code that was in this repository please see [examples/full](examples/full).
-
